@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     python3 \
     python3-pip \
+    python3-venv \
     ninja.build
 
 RUN apt-get install -y \

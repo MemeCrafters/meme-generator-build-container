@@ -1,0 +1,49 @@
+FROM --platform=linux/arm64/v8 python:3.9.13 AS python
+
+FROM debian:buster
+
+RUN apt-get update && apt-get install -y \
+    clang \
+    gcc \
+    g++ \
+    curl \
+    build-essential \
+    software-properties-common \
+    libfontconfig1-dev \
+    libssl-dev \
+    pkg-config \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ninja.build \
+    unzip
+
+RUN apt-get install -y \
+    dh-autoreconf \
+    libcurl4-gnutls-dev \
+    libexpat1-dev \
+    gettext \
+    libz-dev
+
+ARG GIT_VERSION=2.47.0
+ARG GIT_URL=https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.tar.gz
+RUN curl -sL $GIT_URL | tar xz -C /opt && \
+    cd /opt/git-$GIT_VERSION && \
+    make -j 12 && make prefix=/usr/local install
+
+ENV SKIA_NINJA_COMMAND=/usr/bin/ninja \
+    PATH=/usr/local/bin:$PATH
+
+# Android NDK
+ENV ANDROID_NDK_VERSION=r26d
+ENV ANDROID_HOST=linux-x86_64
+RUN curl -sSf -o android-ndk.zip https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux.zip \
+    && unzip android-ndk.zip \
+    && rm android-ndk.zip
+ENV ANDROID_NDK=/android-ndk-${ANDROID_NDK_VERSION}
+ENV PATH=${PATH}:/android-ndk-${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/${ANDROID_HOST}/bin
+
+ENV CC_aarch64_linux_android=aarch64-linux-android26-clang
+ENV CXX_aarch64_linux_android=aarch64-linux-android26-clang++
+ENV AR_aarch64_linux_android=llvm-ar
+ENV CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=aarch64-linux-android26-clang

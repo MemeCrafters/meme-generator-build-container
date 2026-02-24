@@ -1,6 +1,4 @@
-FROM --platform=linux/arm64/v8 python:3.9.13 AS python
-
-FROM debian:buster
+FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     clang \
@@ -15,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
-    ninja.build \
+    ninja-build \
     unzip
 
 RUN apt-get install -y \

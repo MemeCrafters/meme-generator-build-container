@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     clang \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
-    ninja.build
+    ninja-build
 
 RUN apt-get install -y \
     dh-autoreconf \
